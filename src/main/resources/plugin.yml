@@ -1,0 +1,4 @@
+name: DiscordWhitelist
+version: '${project.version}'
+main: de.steallight.discordwhitelist.DiscordWhitelist
+api-version: '1.20'
