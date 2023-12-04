@@ -1,5 +1,8 @@
 package de.steallight.discordwhitelist;
 
+import de.steallight.discordwhitelist.dcCMD.WhitelistAdd;
+import de.steallight.discordwhitelist.listener.AutoCompleteListener;
+import de.steallight.discordwhitelist.listener.ButtonHandler;
 import de.steallight.discordwhitelist.utils.LiteSQL;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -37,6 +40,8 @@ public final class DiscordWhitelist extends JavaPlugin {
             cfg.options().copyDefaults(true);
             cfg.addDefault("BOT_TOKEN", "");
             cfg.addDefault("GUILD_ID", "");
+            cfg.addDefault("LOG_CHANNEL_ID", "");
+            cfg.addDefault("REQUEST_CHANNEL_ID", "");
 
         }
     }
@@ -60,6 +65,8 @@ public final class DiscordWhitelist extends JavaPlugin {
                 Guild server = jda.awaitReady().getGuildById(guildID);
                 Bukkit.getConsoleSender().sendMessage("§8[§c§bDiscordWhitelist§8] §7Discord Bot §averbunden!");
                 assert server != null;
+                this.updateCommands(server);
+                this.addEvents();
 
             }
         } catch (InterruptedException e) {
@@ -81,6 +88,9 @@ public final class DiscordWhitelist extends JavaPlugin {
     }
 
     public void addEvents() {
+        jda.addEventListener(new AutoCompleteListener());
+        jda.addEventListener(new ButtonHandler());
+        jda.addEventListener(new WhitelistAdd());
 
     }
 

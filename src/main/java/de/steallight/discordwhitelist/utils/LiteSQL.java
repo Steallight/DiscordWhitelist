@@ -12,7 +12,7 @@ public class LiteSQL {
     private final String url;
 
     public LiteSQL() throws IOException, SQLException {
-        final File file = new File("datenbank.db");
+        final File file = new File( "datenbank.db");
         if (!file.exists()){
             file.createNewFile();
         }
