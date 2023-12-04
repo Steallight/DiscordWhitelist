@@ -1,11 +1,13 @@
 package de.steallight.discordwhitelist;
 
+import de.steallight.discordwhitelist.dcCMD.IdentifyCMD;
 import de.steallight.discordwhitelist.dcCMD.WhitelistAdd;
 import de.steallight.discordwhitelist.listener.AutoCompleteListener;
 import de.steallight.discordwhitelist.listener.ButtonHandler;
 import de.steallight.discordwhitelist.utils.LiteSQL;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
@@ -91,6 +93,7 @@ public final class DiscordWhitelist extends JavaPlugin {
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new ButtonHandler());
         jda.addEventListener(new WhitelistAdd());
+       // jda.addEventListener(new IdentifyCMD());
 
     }
 
@@ -102,6 +105,11 @@ public final class DiscordWhitelist extends JavaPlugin {
                                 .addOption(OptionType.STRING, "platform", "Trage hier bitte deine Minecraft Plattform an", true, true)
                                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
                                 .setGuildOnly(true)
+
+//                        Commands.slash("identify","Frage den User vom Minecraft-Server ab")
+//                                .addOption(OptionType.STRING, "minecraftname", "Gebe den Ingame-Namen des Users ein", true)
+//                                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS))
+//                                .setGuildOnly(true)
 
                 ).queue();
 

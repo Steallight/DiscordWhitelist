@@ -46,7 +46,7 @@ public class ButtonHandler extends ListenerAdapter {
             Member addedMember = e.getGuild().retrieveMemberById(UserId).complete();
 
             if (!player.isWhitelisted()) {
-
+                try {
 
                     EmbedBuilder eb = new EmbedBuilder();
 
@@ -62,15 +62,19 @@ public class ButtonHandler extends ListenerAdapter {
 
                     new WhitelistPlayer().runTask(DiscordWhitelist.getPlugin());
 
-                   // insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname);
-                    System.out.println("Eingetragen");
+
+                    insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname);
+
+                System.out.println("Eingetragen");
 
                     tc.sendMessageEmbeds(eb.build()).queue();
                     e.reply("Der User wurde gewhitelisted!").setEphemeral(true).queue();
                     e.getMessage().delete().queue();
 
 
-
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
 
             }
         }
@@ -88,7 +92,7 @@ public class ButtonHandler extends ListenerAdapter {
     public void insertMcBinder(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
         sql.getConnection().close();
         Connection con = sql.getConnection();
-        PreparedStatement stmtInsertMcBinder = con.prepareStatement("INSERT INTO Whitelist(MCUsername, DCUserID) VALUES (" + minecraftusername + "," + UserID + ")");
+        PreparedStatement stmtInsertMcBinder = con.prepareStatement("INSERT INTO Whitelist(MCUsername, DCUserID) VALUES ('" + minecraftusername.toLowerCase() + "','" + UserID + "')");
 
         stmtInsertMcBinder.executeUpdate();
         stmtInsertMcBinder.close();
