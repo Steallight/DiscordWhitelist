@@ -61,8 +61,13 @@ public class AutoCompleteListener extends ListenerAdapter {
         if (resultSetWhitelistPlayer != null) {
             int indexCount = 1;
             while (resultSetWhitelistPlayer.next()) {
+
                 String entry = resultSetWhitelistPlayer.getString(indexCount);
+
+
                 tabComplete.add(entry);
+
+
             }
 
 

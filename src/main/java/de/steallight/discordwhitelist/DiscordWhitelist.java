@@ -62,8 +62,9 @@ public final class DiscordWhitelist extends JavaPlugin {
                 getServer().shutdown();
                 Bukkit.getConsoleSender().sendMessage("§cKein DiscordBot-Token vorhanden!");
             } else {
-                this.jda = JDABuilder.createDefault(discordToken,
+                this.jda = JDABuilder.create(discordToken,
                                 GatewayIntent.GUILD_MEMBERS)
+                        .enableCache(CacheFlag.MEMBER_OVERRIDES)
                         .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                         .build();
                 Guild server = jda.awaitReady().getGuildById(guildID);

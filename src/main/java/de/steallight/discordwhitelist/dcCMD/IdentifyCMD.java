@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Objects;
 
 public class IdentifyCMD extends ListenerAdapter {
 
@@ -76,7 +77,7 @@ public class IdentifyCMD extends ListenerAdapter {
 
             stmtGetUserID.close();
             con.close();
-            return UserID;
+            return UserID.trim();
         }
 
     }
