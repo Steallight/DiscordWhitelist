@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -61,8 +62,10 @@ public final class DiscordWhitelist extends JavaPlugin {
                 getServer().shutdown();
                 Bukkit.getConsoleSender().sendMessage("§cKein DiscordBot-Token vorhanden!");
             } else {
-                this.jda = JDABuilder.createDefault(discordToken,
+                this.jda = JDABuilder.create(discordToken,
                                 GatewayIntent.GUILD_MEMBERS)
+                        .enableCache(CacheFlag.MEMBER_OVERRIDES)
+                        .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS)
                         .build();
                 Guild server = jda.awaitReady().getGuildById(guildID);
                 Bukkit.getConsoleSender().sendMessage("§8[§c§bDiscordWhitelist§8] §7Discord Bot §averbunden!");
@@ -107,7 +110,7 @@ public final class DiscordWhitelist extends JavaPlugin {
                                 .setGuildOnly(true),
 
                         Commands.slash("identify","Frage den User vom Minecraft-Server ab")
-                                .addOption(OptionType.STRING, "minecraftname", "Gebe den Ingame-Namen des Users ein", true)
+                                .addOption(OptionType.STRING, "minecraftname", "Gebe den Ingame-Namen des Users ein", true, true)
                                 .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS))
                                 .setGuildOnly(true)
 
