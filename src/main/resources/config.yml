@@ -1,3 +1,6 @@
+#Discord Bot Login Daten
+#https://discord.com/developers/applications
+
 BOT_TOKEN: ""
 REQUEST_CHANNEL_ID: ""
 GUILD_ID: ""

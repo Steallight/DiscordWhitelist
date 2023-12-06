@@ -4,6 +4,7 @@ import de.steallight.discordwhitelist.DiscordWhitelist;
 import de.steallight.discordwhitelist.utils.LiteSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -25,11 +26,16 @@ public class IdentifyCMD extends ListenerAdapter {
 
 
                 String minecraftname = e.getOption("minecraftname").getAsString();
-                String UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname.toLowerCase()).trim();
-                if (UserId != null) {
+                String UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname);
+                System.out.println(UserId);
+
+                Member taggedUser = e.getGuild().getMemberById(UserId);
+                System.out.println("TaggedUser: " + taggedUser);
+
+                if (taggedUser != null) {
 
                     //int UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname.toLowerCase());
-                    Member taggedUser = e.getGuild().getMemberById(UserId);
+
                     EmbedBuilder eb = new EmbedBuilder();
                     eb
                             .setTitle("User-Abfrage")
@@ -65,7 +71,7 @@ public class IdentifyCMD extends ListenerAdapter {
             return null;
         } else {
 
-            String UserID = resultSetUserID.getString("DCUserID");
+            String UserID = resultSetUserID.getString(1);
 
 
             stmtGetUserID.close();
@@ -74,4 +80,6 @@ public class IdentifyCMD extends ListenerAdapter {
         }
 
     }
+
+
 }

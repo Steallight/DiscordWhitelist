@@ -63,7 +63,7 @@ public class ButtonHandler extends ListenerAdapter {
                     new WhitelistPlayer().runTask(DiscordWhitelist.getPlugin());
 
 
-                    insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname.toLowerCase());
+                    insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname);
 
                 System.out.println("Eingetragen");
 
@@ -92,7 +92,7 @@ public class ButtonHandler extends ListenerAdapter {
     public void insertMcBinder(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
         sql.getConnection().close();
         Connection con = sql.getConnection();
-        PreparedStatement stmtInsertMcBinder = con.prepareStatement("INSERT INTO Whitelist(MCUsername, DCUserID) VALUES ('" + minecraftusername.toLowerCase() + "','" + UserID + "')");
+        PreparedStatement stmtInsertMcBinder = con.prepareStatement("INSERT INTO Whitelist(MCUsername, DCUserID) VALUES ('" + minecraftusername + "','" + UserID + "')");
 
         stmtInsertMcBinder.executeUpdate();
         stmtInsertMcBinder.close();
