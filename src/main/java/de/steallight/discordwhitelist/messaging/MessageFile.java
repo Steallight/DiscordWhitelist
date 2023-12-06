@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 public class MessageFile {
 
 
-    private FileConfiguration config = null;
+    private FileConfiguration config;
 
     public MessageFile(String name){
         this.config = YamlConfiguration.loadConfiguration(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(name)));
