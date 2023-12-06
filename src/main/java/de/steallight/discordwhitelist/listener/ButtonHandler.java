@@ -63,7 +63,7 @@ public class ButtonHandler extends ListenerAdapter {
                     new WhitelistPlayer().runTask(DiscordWhitelist.getPlugin());
 
 
-                    insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname);
+                    insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname.toLowerCase());
 
                 System.out.println("Eingetragen");
 

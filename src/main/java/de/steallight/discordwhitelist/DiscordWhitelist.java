@@ -9,12 +9,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.DefaultMemberPermissions;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -63,7 +61,9 @@ public final class DiscordWhitelist extends JavaPlugin {
                 getServer().shutdown();
                 Bukkit.getConsoleSender().sendMessage("§cKein DiscordBot-Token vorhanden!");
             } else {
-                this.jda = JDABuilder.createDefault(discordToken).build();
+                this.jda = JDABuilder.createDefault(discordToken,
+                                GatewayIntent.GUILD_MEMBERS)
+                        .build();
                 Guild server = jda.awaitReady().getGuildById(guildID);
                 Bukkit.getConsoleSender().sendMessage("§8[§c§bDiscordWhitelist§8] §7Discord Bot §averbunden!");
                 assert server != null;
@@ -93,7 +93,7 @@ public final class DiscordWhitelist extends JavaPlugin {
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new ButtonHandler());
         jda.addEventListener(new WhitelistAdd());
-       // jda.addEventListener(new IdentifyCMD());
+        jda.addEventListener(new IdentifyCMD());
 
     }
 
@@ -104,12 +104,12 @@ public final class DiscordWhitelist extends JavaPlugin {
                                 .addOption(OptionType.STRING, "minecraftname", "Gebe hier deinen Ingame Namen ein", true)
                                 .addOption(OptionType.STRING, "platform", "Trage hier bitte deine Minecraft Plattform an", true, true)
                                 .setDefaultPermissions(DefaultMemberPermissions.ENABLED)
-                                .setGuildOnly(true)
+                                .setGuildOnly(true),
 
-//                        Commands.slash("identify","Frage den User vom Minecraft-Server ab")
-//                                .addOption(OptionType.STRING, "minecraftname", "Gebe den Ingame-Namen des Users ein", true)
-//                                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS))
-//                                .setGuildOnly(true)
+                        Commands.slash("identify","Frage den User vom Minecraft-Server ab")
+                                .addOption(OptionType.STRING, "minecraftname", "Gebe den Ingame-Namen des Users ein", true)
+                                .setDefaultPermissions(DefaultMemberPermissions.enabledFor(Permission.MODERATE_MEMBERS))
+                                .setGuildOnly(true)
 
                 ).queue();
 

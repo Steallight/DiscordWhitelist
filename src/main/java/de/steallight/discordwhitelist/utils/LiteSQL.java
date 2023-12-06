@@ -32,7 +32,7 @@ public class LiteSQL {
     private void createTables() throws SQLException{
         Connection con = getConnection();
 
-        PreparedStatement mcBinder = con.prepareStatement("CREATE TABLE IF NOT EXISTS Whitelist(MCUsername TEXT NOT NULL, DCUserID INTEGER NOT NULL)");
+        PreparedStatement mcBinder = con.prepareStatement("CREATE TABLE IF NOT EXISTS Whitelist(MCUsername TEXT NOT NULL, DCUserID TEXT NOT NULL)");
 
         mcBinder.execute();
         mcBinder.close();

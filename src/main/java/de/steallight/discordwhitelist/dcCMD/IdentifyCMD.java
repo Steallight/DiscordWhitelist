@@ -4,10 +4,8 @@ import de.steallight.discordwhitelist.DiscordWhitelist;
 import de.steallight.discordwhitelist.utils.LiteSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
@@ -27,21 +25,26 @@ public class IdentifyCMD extends ListenerAdapter {
 
 
                 String minecraftname = e.getOption("minecraftname").getAsString();
-                int UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname.toLowerCase());
-           //     Member taggedUser = e.getGuild().retrieveMemberById(UserId).complete();
-                EmbedBuilder eb = new EmbedBuilder();
-                eb
-                        .setTitle("User-Abfrage")
-                        .setColor(Color.CYAN)
-                       // .setThumbnail(taggedUser.getAvatarUrl())
-                        .addField("Minecraft-Username", minecraftname, true)
-                       // .addField("Discord-ID", taggedUser.getId() ,true)
-                        .setFooter("abgefragt von " + e.getUser().getName(), e.getUser().getAvatarUrl());
+                String UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname.toLowerCase()).trim();
+                if (UserId != null) {
 
-                e.replyEmbeds(eb.build()).queue();
+                    //int UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname.toLowerCase());
+                    Member taggedUser = e.getGuild().getMemberById(UserId);
+                    EmbedBuilder eb = new EmbedBuilder();
+                    eb
+                            .setTitle("User-Abfrage")
+                            .setColor(Color.CYAN)
+                            .setThumbnail(taggedUser.getEffectiveAvatarUrl())
+                            .addField("Minecraft-Username", minecraftname, true)
+                            .addField("Discord-ID", taggedUser.getId(), true)
+                            .setFooter("abgefragt von " + e.getUser().getName(), e.getUser().getAvatarUrl());
 
+                    e.replyEmbeds(eb.build()).queue();
 
-            }catch (SQLException ex){
+                }else {
+                    e.reply("Der User steht nicht in der Datenbank!").setEphemeral(true).queue();
+                }
+            } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
@@ -49,18 +52,26 @@ public class IdentifyCMD extends ListenerAdapter {
     }
 
 
-    public int getUserID(LiteSQL sql, String minecraftname)throws SQLException {
+    public String getUserID(LiteSQL sql, String minecraftname) throws SQLException {
         sql.getConnection().close();
         Connection con = sql.getConnection();
-        PreparedStatement stmtGetUserID = con.prepareStatement("SELECT * FROM Whitelist WHERE MCUsername='" + minecraftname + "'");
+        PreparedStatement stmtGetUserID = con.prepareStatement("SELECT DCUserID FROM Whitelist WHERE MCUsername = '" + minecraftname + "'");
 
         ResultSet resultSetUserID = stmtGetUserID.executeQuery();
 
-        int UserID = resultSetUserID.getInt(1);
 
-        stmtGetUserID.close();
-        con.close();
-        return UserID;
+
+        if (!resultSetUserID.next()) {
+            return null;
+        } else {
+
+            String UserID = resultSetUserID.getString("DCUserID");
+
+
+            stmtGetUserID.close();
+            con.close();
+            return UserID;
+        }
 
     }
 }
