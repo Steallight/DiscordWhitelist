@@ -6,8 +6,8 @@ This plugin combines the whitelist of your Minecraft server with your Discord bo
 
 ## Inhaltsverzeichnis
 
-[Authors](#authors)
-[FAQ](#faq)
+[Authors](#authors)\
+[FAQ](#faq)\
 [Screenshots](#screenshots)
 
 ## Authors
