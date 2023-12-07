@@ -41,8 +41,8 @@ public class WhitelistAdd extends ListenerAdapter {
                         .setThumbnail(e.getUser().getAvatarUrl());
 
 
-                Button acceptButton = Button.success("request-accept[" + minecraftname + "]_" + e.getUser().getId() + ";" + plattform, "Annehmen");
-                Button denyButton = Button.danger("request-deny", "Ablehnen");
+                Button acceptButton = Button.success("request-accept[" + minecraftname + "]_" + e.getUser().getId() + ";" + plattform, DiscordWhitelist.getPlugin().getMessageFormatter().format("button.accept"));
+                Button denyButton = Button.danger("request-deny", DiscordWhitelist.getPlugin().getMessageFormatter().format("button.deny"));
 
                 tc.sendMessageEmbeds(eb.build()).setActionRow(acceptButton, denyButton).queue();
                 e.reply("Deine Request liegt dem Mod-Team vor!").setEphemeral(true).queue();

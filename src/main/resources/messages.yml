@@ -6,3 +6,6 @@ enable:
   bot-connected: '§7Discord Bot §averbunden!'
 error:
   no-token: '§cKein DiscordBot-Token vorhanden!'
+button:
+  accept: 'Annehmen'
+  deny: 'Ablehnen'
