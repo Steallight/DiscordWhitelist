@@ -67,13 +67,16 @@ public final class DiscordWhitelist extends JavaPlugin {
         try {
             String guildID = getConfig().getString("GUILD_ID");
 
-            String discordToken = getConfig().getString("BOT_TOKEN");
+            String discordToken = getConfig().getString("BOT_TOKEN").trim();
+
+            System.out.println("Discord-Token: " + discordToken);
 
             Bukkit.getConsoleSender().sendMessage(DiscordWhitelist.getPlugin().messageFormatter.format("enable.enabled"));
 
-            if (discordToken == null) {
-                getServer().shutdown();
-                Bukkit.getConsoleSender().sendMessage(messageFormatter.format(false,"error.no-token"));
+            if (discordToken.equals("")) {
+                messageFormatter = null;
+                getPluginLoader().disablePlugin(getServer().getPluginManager().getPlugin(getPlugin().getName()));
+                Bukkit.getConsoleSender().sendMessage(messageFormatter.format(false, "error.no-token"));
             } else {
                 this.jda = JDABuilder.create(discordToken,
                                 GatewayIntent.GUILD_MEMBERS)
@@ -98,14 +101,16 @@ public final class DiscordWhitelist extends JavaPlugin {
     public void onDisable() {
 
 
-
         String discordToken = getConfig().getString("BOT_TOKEN");
-        if (discordToken == null) {
+        if (discordToken.equals("")) {
             Bukkit.getConsoleSender().sendMessage(messageFormatter.format("disable.disabled"));
+            messageFormatter = null;
+            getPluginLoader().disablePlugin(getServer().getPluginManager().getPlugin(getPlugin().getName()));
 
         } else {
-            jda.shutdown();
+
             Bukkit.getConsoleSender().sendMessage(messageFormatter.format("disable.disabled"));
+
         }
         messageFormatter = null;
     }
@@ -141,10 +146,9 @@ public final class DiscordWhitelist extends JavaPlugin {
         return INSTANCE;
     }
 
-    public MessageFormatter getMessageFormatter(){
+    public MessageFormatter getMessageFormatter() {
         return messageFormatter;
     }
-
 
 
 }
