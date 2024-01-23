@@ -1,0 +1,113 @@
+package de.steallight.discordwhitelist.mcCMD;
+
+import de.steallight.discordwhitelist.DiscordWhitelist;
+import de.steallight.discordwhitelist.utils.LiteSQL;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class MCWhitelist implements CommandExecutor, TabCompleter {
+
+
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
+        if (sender instanceof Player) {
+            if (cmd.getName().equalsIgnoreCase("wl")) {
+                Player p = (Player) sender;
+                if (sender.isOp()) {
+
+                    String subcommand = args[0].toLowerCase();
+                    String minecraftUsername = args[1];
+                        OfflinePlayer whitelistPlayer = Bukkit.getOfflinePlayer(minecraftUsername);
+
+try {
+
+
+    switch (subcommand) {
+        case "add" -> {
+            if (!whitelistPlayer.isWhitelisted()) {
+
+
+                String dcUserID = args[2];
+                Bukkit.getOfflinePlayer(minecraftUsername).setWhitelisted(true);
+                addWhitelist(DiscordWhitelist.getPlugin().database, dcUserID, minecraftUsername);
+            }else {
+                p.sendMessage(DiscordWhitelist.getPlugin().getMessageFormatter().format(true, "whitelist.already-whitelisted"));
+            }
+        }
+
+        case "remove" -> {
+            if (whitelistPlayer.isWhitelisted()) {
+
+                Bukkit.getOfflinePlayer(minecraftUsername).setWhitelisted(false);
+                removeWhitelist(DiscordWhitelist.getPlugin().database, minecraftUsername);
+            }else {
+                p.sendMessage(DiscordWhitelist.getPlugin().getMessageFormatter().format(true, "whitelist.not-whitelisted"));
+            }
+        }
+    }
+}catch (SQLException ex){
+    throw new RuntimeException(ex);
+}
+
+                }else {
+                    p.sendMessage(DiscordWhitelist.getPlugin().getMessageFormatter().format(true, "error.no-permissions"));
+                }
+            }
+        }
+        return false;
+    }
+
+
+
+    public void addWhitelist(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
+        sql.getConnection().close();
+        Connection con = sql.getConnection();
+        PreparedStatement stmtInsertWhitelist = con.prepareStatement("INSERT INTO Whitelist(MCUsername, DCUserID) VALUES ('" + minecraftusername + "','" + UserID + "')");
+
+        stmtInsertWhitelist.executeUpdate();
+        stmtInsertWhitelist.close();
+        con.close();
+
+    }
+
+    public void removeWhitelist(LiteSQL sql, String minecraftusername) throws SQLException{
+            sql.getConnection().close();
+            Connection con = sql.getConnection();
+            PreparedStatement stmtRemoveWhitelist = con.prepareStatement("DELETE FROM Whitelist WHERE MCUsername = '" + minecraftusername + "'");
+
+            stmtRemoveWhitelist.executeUpdate();
+            stmtRemoveWhitelist.close();
+            con.close();
+    }
+
+
+    @Nullable
+    @Override
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+        if (sender.isOp()){
+            String[] subcmds = {"add, remove"};
+            ArrayList<String> tabComplete = new ArrayList<>();
+            if (args.length == 0) return tabComplete;
+            if (args.length == 1){
+                return Arrays.asList(subcmds);
+            }
+        }
+        return null;
+    }
+}

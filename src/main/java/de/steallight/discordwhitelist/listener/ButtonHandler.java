@@ -53,6 +53,7 @@ public class ButtonHandler extends ListenerAdapter {
                     eb
                             .setTitle("Whitelist-Log")
                             .setColor(Color.GREEN)
+                            .setThumbnail(addedMember.getAvatarUrl())
                             .addField("Plattform", plattform, false)
                             .addField("MC-Name", minecraftname, false)
                             .addBlankField(false)
@@ -65,7 +66,7 @@ public class ButtonHandler extends ListenerAdapter {
 
                     insertMcBinder(DiscordWhitelist.getPlugin().database, UserId, minecraftname);
 
-                System.out.println("Eingetragen");
+
 
                     tc.sendMessageEmbeds(eb.build()).queue();
                     e.reply("Der User wurde gewhitelisted!").setEphemeral(true).queue();

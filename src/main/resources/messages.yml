@@ -6,6 +6,11 @@ enable:
   bot-connected: '§7Discord Bot §averbunden!'
 error:
   no-token: '§cKein DiscordBot-Token vorhanden!'
+  ingame-wrong-usage: '§cUsage /wl [add/remove] <Username> <Discord-UserID>'
+  no-permissions: '§cFehlende Berechtigungen!'
 button:
   accept: 'Annehmen'
   deny: 'Ablehnen'
+whitelist:
+  already-whitelisted: '§cDer Spieler ist schon gewhitelisted!'
+  not-whitelisted: '§cDer Spieler ist nicht gewhitelisted!'

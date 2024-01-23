@@ -1,4 +1,8 @@
 name: DiscordWhitelist
 version: '${project.version}'
 main: de.steallight.discordwhitelist.DiscordWhitelist
+author: "SteallightDEV"
 api-version: '1.20'
+commands:
+  wl:
+    description: "Verwalte die Whitelist auf dem Server"

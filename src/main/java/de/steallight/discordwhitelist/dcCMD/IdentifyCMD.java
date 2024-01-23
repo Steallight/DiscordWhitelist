@@ -4,7 +4,6 @@ import de.steallight.discordwhitelist.DiscordWhitelist;
 import de.steallight.discordwhitelist.utils.LiteSQL;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
 
 public class IdentifyCMD extends ListenerAdapter {
 
@@ -28,10 +26,10 @@ public class IdentifyCMD extends ListenerAdapter {
 
                 String minecraftname = e.getOption("minecraftname").getAsString();
                 String UserId = getUserID(DiscordWhitelist.getPlugin().database, minecraftname);
-                System.out.println(UserId);
+
 
                 Member taggedUser = e.getGuild().getMemberById(UserId);
-                System.out.println("TaggedUser: " + taggedUser);
+
 
                 if (taggedUser != null) {
 

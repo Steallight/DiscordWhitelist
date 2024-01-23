@@ -25,7 +25,6 @@ public class LiteSQL {
 
     public Connection getConnection() throws SQLException{
         Connection connection = DriverManager.getConnection(url);
-        System.out.println("Verbindung wurde hergestellt!");
         return connection;
     }
 

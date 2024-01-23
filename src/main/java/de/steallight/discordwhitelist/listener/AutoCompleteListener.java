@@ -47,8 +47,22 @@ public class AutoCompleteListener extends ListenerAdapter {
             }
 
 
-        }
+        } else if (e.getName().equals("remove") && e.getFocusedOption().getName().equals("minecraftname")) {
+            try {
+                List<Command.Choice> whitelistPlayerOptions = getWhitelistedPlayers(DiscordWhitelist.getPlugin().database)
+                        .stream().filter(players -> players.startsWith(e.getFocusedOption().getValue()))
+                        .map(players -> new Command.Choice(players,players))
+                        .collect(Collectors.toList());
+
+                e.replyChoices(whitelistPlayerOptions).queue();
+            }catch (SQLException error){
+                throw new RuntimeException(error);
+            }
+
+
     }
+
+}
 
 
     public List<String> getWhitelistedPlayers(LiteSQL sql) throws SQLException {
