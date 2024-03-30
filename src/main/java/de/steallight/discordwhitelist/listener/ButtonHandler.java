@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ButtonHandler extends ListenerAdapter {
@@ -93,6 +94,11 @@ public class ButtonHandler extends ListenerAdapter {
                         .setTitle("Der User wurde gekickt!")
                         .setColor(Color.GREEN);
                 e.replyEmbeds(eb.build()).setEphemeral(true).queue();
+                try {
+                    removeMCBinder(DiscordWhitelist.getPlugin().database, minecraftname);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 writeLog(e.getGuild().getMemberById(userId).getNickname(), Color.RED, "gekickt von " + e.getMember(),e);
             }else {
                 e.reply("Dazu hast du keine Rechte").setEphemeral(true).queue();
@@ -115,6 +121,11 @@ public class ButtonHandler extends ListenerAdapter {
                         .setTitle("Der User wurde gebannt")
                         .setColor(Color.GREEN);
                 e.replyEmbeds(eb.build()).setEphemeral(true).queue();
+                try {
+                    removeMCBinder(DiscordWhitelist.getPlugin().database, minecraftname);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
                 writeLog(minecraftname + " wurde gebannt", Color.RED, "gebannt von " + e.getMember().getNickname(), e);
             }else {
 
@@ -127,9 +138,16 @@ public class ButtonHandler extends ListenerAdapter {
             OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
 
             if (player.isWhitelisted()) {
-                new DeWhitlistPlayer().runTask(DiscordWhitelist.getPlugin());
-                e.reply("Der User wurde von der Whitelist entfernt").setEphemeral(true).queue();
-                writeLog(minecraftname + " von der Whitelist entfernt", Color.green, "entfernt von " + e.getMember().getNickname(), e);
+
+                try {
+                    new DeWhitlistPlayer().runTask(DiscordWhitelist.getPlugin());
+                    e.reply("Der User wurde von der Whitelist entfernt").setEphemeral(true).queue();
+                    removeMCBinder(DiscordWhitelist.getPlugin().database, minecraftname);
+                    writeLog(minecraftname + " von der Whitelist entfernt", Color.green, "entfernt von " + e.getMember().getNickname(), e);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }else {
                 e.reply("Der User steht nicht auf der Whitelist").queue();
             }
@@ -162,6 +180,15 @@ public class ButtonHandler extends ListenerAdapter {
 
         stmtInsertMcBinder.executeUpdate();
         stmtInsertMcBinder.close();
+        con.close();
+    }
+
+    public void removeMCBinder(LiteSQL sql, String minecraftname) throws SQLException{
+        sql.getConnection().close();
+        Connection con = sql.getConnection();
+        PreparedStatement stmtRemoveBinder = con.prepareStatement("DELETE FROM Whitelist WHERE MCUsername='" + minecraftname + "'");
+        stmtRemoveBinder.executeUpdate();
+        stmtRemoveBinder.close();
         con.close();
     }
 
