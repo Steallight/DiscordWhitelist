@@ -10,12 +10,15 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 public class ButtonHandler extends ListenerAdapter {
 
@@ -82,6 +85,26 @@ public class ButtonHandler extends ListenerAdapter {
         } else if (e.getComponentId().startsWith("identifyKick")) {
             String userId = e.getComponentId().substring(13);
             e.getGuild().kick(e.getGuild().getMemberById(userId)).queue();
+
+            //Identify Ban Button Handling
+        } else if (e.getComponentId().startsWith("identifyBan")) {
+            String userId = e.getComponentId().substring(12);
+            String ouputData = e.getComponentId();
+            int startIndex = ouputData.indexOf("[");
+            int endIndex = ouputData.indexOf("]");
+            minecraftname = e.getComponentId().substring(startIndex + 1, endIndex);
+
+            OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
+            e.getGuild().ban(e.getGuild().getMemberById(userId), 10, TimeUnit.DAYS).queue();
+            player.ban("", Instant.ofEpochSecond(0),"").save();
+
+
+        } else if (e.getComponentId().startsWith("identifyDewhitelist")) {
+
+            minecraftname = e.getComponentId().substring(20);
+
+            new DeWhitlistPlayer().runTask(DiscordWhitelist.getPlugin());
+            e.reply("Der User wurde von der Whitelist entfernt").setEphemeral(true).queue();
         }
     }
 
@@ -93,6 +116,17 @@ public class ButtonHandler extends ListenerAdapter {
             player.setWhitelisted(true);
         }
     }
+
+    public class DeWhitlistPlayer extends BukkitRunnable{
+        @Override
+        public void run() {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
+
+            player.setWhitelisted(false);
+        }
+    }
+
+
 
     public void insertMcBinder(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
         sql.getConnection().close();
