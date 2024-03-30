@@ -1,7 +1,9 @@
 package de.steallight.discordwhitelist.mcCMD;
 
 import de.steallight.discordwhitelist.DiscordWhitelist;
+import de.steallight.discordwhitelist.messaging.MessageFormatter;
 import de.steallight.discordwhitelist.utils.LiteSQL;
+import net.dv8tion.jda.api.entities.Message;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.OfflinePlayer;
@@ -21,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MCWhitelist implements CommandExecutor, TabCompleter {
+
+
+    MessageFormatter msgFormat = DiscordWhitelist.getPlugin().getMessageFormatter();
 
 
 
@@ -46,6 +51,7 @@ try {
                 String dcUserID = args[2];
                 Bukkit.getOfflinePlayer(minecraftUsername).setWhitelisted(true);
                 addWhitelist(DiscordWhitelist.getPlugin().database, dcUserID, minecraftUsername);
+                p.sendMessage(msgFormat.format(true, "success.whitelist-added"));
             }else {
                 p.sendMessage(DiscordWhitelist.getPlugin().getMessageFormatter().format(true, "whitelist.already-whitelisted"));
             }
@@ -56,8 +62,9 @@ try {
 
                 Bukkit.getOfflinePlayer(minecraftUsername).setWhitelisted(false);
                 removeWhitelist(DiscordWhitelist.getPlugin().database, minecraftUsername);
+                p.sendMessage(msgFormat.format(true, "success.whitelist-removed"));
             }else {
-                p.sendMessage(DiscordWhitelist.getPlugin().getMessageFormatter().format(true, "whitelist.not-whitelisted"));
+                p.sendMessage(msgFormat.format(true, "whitelist.not-whitelisted"));
             }
         }
     }
@@ -101,7 +108,7 @@ try {
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (sender.isOp()){
-            String[] subcmds = {"add, remove"};
+            String[] subcmds = {"add", "remove"};
             ArrayList<String> tabComplete = new ArrayList<>();
             if (args.length == 0) return tabComplete;
             if (args.length == 1){

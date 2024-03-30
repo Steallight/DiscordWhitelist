@@ -63,7 +63,7 @@ public class WhitelistRemove extends ListenerAdapter {
 
     }
 
-    public class DeWhitelistPlayer extends BukkitRunnable {
+    public static class DeWhitelistPlayer extends BukkitRunnable {
         @Override
         public void run() {
             OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);

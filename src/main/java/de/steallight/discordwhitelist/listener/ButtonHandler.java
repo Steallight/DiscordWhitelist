@@ -78,6 +78,10 @@ public class ButtonHandler extends ListenerAdapter {
                 }
 
             }
+            //Identify Kick Button Handling
+        } else if (e.getComponentId().startsWith("identifyKick")) {
+            String userId = e.getComponentId().substring(13);
+            e.getGuild().kick(e.getGuild().getMemberById(userId)).queue();
         }
     }
 

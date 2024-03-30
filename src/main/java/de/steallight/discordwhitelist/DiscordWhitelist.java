@@ -55,6 +55,14 @@ public final class DiscordWhitelist extends JavaPlugin {
     }
 
 
+
+
+
+
+
+
+
+
     @Override
     public void onEnable() {
 
@@ -64,7 +72,11 @@ public final class DiscordWhitelist extends JavaPlugin {
 
         config();
 
+
         saveDefaultConfig();
+
+
+
 
         getCommand("wl").setExecutor(new MCWhitelist());
         getCommand("wl").setTabCompleter(new MCWhitelist());
@@ -163,6 +175,8 @@ public final class DiscordWhitelist extends JavaPlugin {
     public MessageFormatter getMessageFormatter() {
         return messageFormatter;
     }
+
+
 
 
 }
