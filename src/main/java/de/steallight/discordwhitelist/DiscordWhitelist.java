@@ -28,7 +28,7 @@ import java.sql.SQLException;
 
 public final class DiscordWhitelist extends JavaPlugin {
 
-    private JDA jda;
+    public static JDA jda;
 
 
     private MessageFormatter messageFormatter;
@@ -39,6 +39,7 @@ public final class DiscordWhitelist extends JavaPlugin {
     public LiteSQL database = new LiteSQL();
 
     public DiscordWhitelist() throws SQLException, IOException {
+
     }
 
     public void config() {
@@ -92,11 +93,11 @@ public final class DiscordWhitelist extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage(DiscordWhitelist.getPlugin().messageFormatter.format("enable.enabled"));
 
             if (discordToken.equals("")) {
-                messageFormatter = null;
+
                 getPluginLoader().disablePlugin(getServer().getPluginManager().getPlugin(getPlugin().getName()));
                 Bukkit.getConsoleSender().sendMessage(messageFormatter.format(false, "error.no-token"));
             } else {
-                this.jda = JDABuilder.create(discordToken,
+                jda = JDABuilder.create(discordToken,
                                 GatewayIntent.GUILD_MEMBERS)
                         .enableCache(CacheFlag.MEMBER_OVERRIDES)
                         .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
