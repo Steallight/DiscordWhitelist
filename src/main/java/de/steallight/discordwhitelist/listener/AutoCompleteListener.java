@@ -23,7 +23,7 @@ public class AutoCompleteListener extends ListenerAdapter {
             "Bedrock"
     };
 
-
+    // AutoComplete Listener | Autovervollständigung für Ingame Commands
     @Override
     public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent e) {
         if (e.getName().equals("whitelist") && e.getFocusedOption().getName().equals("platform")) {

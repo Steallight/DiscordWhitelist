@@ -42,6 +42,7 @@ public final class DiscordWhitelist extends JavaPlugin {
 
     }
 
+    // Definieren der Konfigurationsdatei für den Plugin Ordner
     public void config() {
         File c = new File("plugins/DiscordWhitelist", "config.yml");
         FileConfiguration cfg = YamlConfiguration.loadConfiguration(c);
@@ -66,6 +67,8 @@ public final class DiscordWhitelist extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // Plugin startup logic
 
         messageFormatter = new MessageFormatter();
 
@@ -114,13 +117,14 @@ public final class DiscordWhitelist extends JavaPlugin {
         }
 
 
-        // Plugin startup logic
+
 
     }
 
     @Override
     public void onDisable() {
 
+        // Plugin Shutdown Logic
 
         String discordToken = getConfig().getString("BOT_TOKEN");
         if (discordToken.equals("")) {
@@ -136,6 +140,7 @@ public final class DiscordWhitelist extends JavaPlugin {
         jda.shutdown();
     }
 
+    // Methode um EventListener zu registrieren
     public void addEvents() {
         jda.addEventListener(new AutoCompleteListener());
         jda.addEventListener(new ButtonHandler());
@@ -145,6 +150,7 @@ public final class DiscordWhitelist extends JavaPlugin {
 
     }
 
+    // Methode um Discord Commands zu registrieren
     public void updateCommands(Guild server) {
         server.updateCommands()
                 .addCommands(

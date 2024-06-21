@@ -32,6 +32,8 @@ public class ButtonHandler extends ListenerAdapter {
     EmbedBuilder eb = new EmbedBuilder();
     @Override
     public void onButtonInteraction(@NotNull ButtonInteractionEvent e) {
+
+        // Accept Request Button Handling
         if (e.getComponentId().startsWith("request-accept")) {
             String outputData = e.getComponentId();
             TextChannel tc = e.getGuild().getTextChannelById(logChannelID);
@@ -131,7 +133,7 @@ public class ButtonHandler extends ListenerAdapter {
 
                 e.reply("Du hast dazu keine Rechte").queue();
             }
-
+        // Identify DeWhitelist Button Handler
         } else if (e.getComponentId().startsWith("identifyDewhitelist")) {
 
             minecraftname = e.getComponentId().substring(20);
@@ -172,7 +174,7 @@ public class ButtonHandler extends ListenerAdapter {
         }
     }
 
-
+    // Methode um Einträge in die Datenbank hinzuzufügen
     public void insertMcBinder(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
         sql.getConnection().close();
         Connection con = sql.getConnection();
@@ -183,6 +185,7 @@ public class ButtonHandler extends ListenerAdapter {
         con.close();
     }
 
+    // Methode um Einträge aus der Datenbank zu entfernen
     public void removeMCBinder(LiteSQL sql, String minecraftname) throws SQLException{
         sql.getConnection().close();
         Connection con = sql.getConnection();
@@ -192,6 +195,7 @@ public class ButtonHandler extends ListenerAdapter {
         con.close();
     }
 
+    // Methode um Logs in einen festgelegten TextChannel zu schreiben
     public void writeLog(String Title, Color color, String footer, ButtonInteractionEvent e){
         eb
                 .setTitle(Title)

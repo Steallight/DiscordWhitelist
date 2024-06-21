@@ -23,6 +23,8 @@ public class WhitelistAdd extends ListenerAdapter {
 
     String requestChannelID = DiscordWhitelist.getPlugin().getConfig().getString("REQUEST_CHANNEL_ID");
 
+
+    // Handler für den Whitelist Request zum hinzufügen eines Spielers auf die Whitelist
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
         if (e.getName().equals("whitelist")) {

@@ -19,7 +19,7 @@ import java.util.Collection;
 
 public class IdentifyCMD extends ListenerAdapter {
 
-
+    // Identifiziert einen Ingame-User und gibt den zugehörigen Discord User an
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
 

@@ -23,6 +23,8 @@ public class WhitelistRemove extends ListenerAdapter {
     EmbedBuilder eb = new EmbedBuilder();
     String logChannelID = DiscordWhitelist.getPlugin().getConfig().getString("LOG_CHANNEL_ID");
 
+
+    // Handler für das entfernen eines Spielers aus der Datenbank
     @Override
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
         if (e.getName().equals("remove")) {
@@ -51,7 +53,7 @@ public class WhitelistRemove extends ListenerAdapter {
         }
     }
 
-
+// SQL-connect Methode / wird verwendet um das Verbinden auf die Datenbank in einer abgegrentzen Methode zu handlen
     public void removeUser(LiteSQL sql, String minecraftname) throws SQLException {
 
         sql.getConnection().close();
@@ -62,7 +64,7 @@ public class WhitelistRemove extends ListenerAdapter {
         con.close();
 
     }
-
+    // wird benötigt um den Spieler über das OfflinePlayer Objekt auf dem Server von der Whitelist zu entfernen
     public static class DeWhitelistPlayer extends BukkitRunnable {
         @Override
         public void run() {
@@ -72,6 +74,8 @@ public class WhitelistRemove extends ListenerAdapter {
         }
     }
 
+
+    // Methode zum schreiben des Logs
     public void writeLog(EmbedBuilder eb, TextChannel tc, String minecraftname, Member modUser) {
         eb
                 .setTitle("User entfernt")

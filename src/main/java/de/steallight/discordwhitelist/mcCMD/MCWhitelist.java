@@ -28,7 +28,7 @@ public class MCWhitelist implements CommandExecutor, TabCompleter {
     MessageFormatter msgFormat = DiscordWhitelist.getPlugin().getMessageFormatter();
 
 
-
+    // Ingame Command für das Whitelisten eines Spielers
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player) {
@@ -81,7 +81,7 @@ try {
     }
 
 
-
+    // Methode um einen Spieler in die Whitelist und in die Datenbank aufzunehmen
     public void addWhitelist(LiteSQL sql, String UserID, String minecraftusername) throws SQLException {
         sql.getConnection().close();
         Connection con = sql.getConnection();
@@ -93,6 +93,7 @@ try {
 
     }
 
+    // Methode um einen Spieler von der Whitelist und der Datebank zu entfernen
     public void removeWhitelist(LiteSQL sql, String minecraftusername) throws SQLException{
             sql.getConnection().close();
             Connection con = sql.getConnection();
@@ -106,6 +107,7 @@ try {
 
     @Nullable
     @Override
+    // AutoComplete Handler
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         if (sender.isOp()){
             String[] subcmds = {"add", "remove"};
