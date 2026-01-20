@@ -1,36 +1,19 @@
-name: Release
-
-on:
-  push:
-    tags:
-      - '*'  # Jeder Tag triggert (z. B. v1.0-stable, v1.1-beta)
-
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: contains(github.ref_name, 'stable')  # Nur bei "stable" im Tag-Namen
+    if: contains(github.ref_name, 'stable')
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Build JAR  # Dein Maven-Build
+      - name: Build
         run: mvn clean package
       - name: Create Release
-        uses: actions/create-release@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
-          body: "Automatischer Stable-Release."
+          tag: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          body: "Minecraft DiscordWhitelistPort ${{ github.ref_name }}"
+          artifacts: "target/*.jar"
           draft: false
           prerelease: false
-      - name: Upload JAR
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/dein-plugin.jar
-          asset_name: dein-plugin-${{ github.ref_name }}.jar
-          asset_content_type: application/java-archive
