@@ -1,0 +1,90 @@
+package de.steallight.discordWhitelistPort.dcCMD;
+
+import de.steallight.discordWhitelistPort.main.DiscordWhitelistPort;
+import de.steallight.discordWhitelistPort.utils.LiteSQL;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
+
+import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class WhitelistRemove extends ListenerAdapter {
+
+    public static String minecraftname;
+    EmbedBuilder eb = new EmbedBuilder();
+    String logChannelID = DiscordWhitelistPort.getPlugin().getConfig().getString("LOG_CHANNEL_ID");
+
+
+    // Handler für das entfernen eines Spielers aus der Datenbank
+    @Override
+    public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent e) {
+        if (e.getName().equals("remove")) {
+            minecraftname = e.getOption("minecraftname").getAsString();
+            TextChannel tc = e.getGuild().getTextChannelById(logChannelID);
+            OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
+
+            if (player.isWhitelisted()) {
+                try {
+                    removeUser(DiscordWhitelistPort.getPlugin().database, minecraftname);
+                    new DeWhitelistPlayer().runTask(DiscordWhitelistPort.getPlugin());
+
+                    eb
+                            .setTitle("Der User wurde aus der Whitelist entfernt")
+                            .setColor(Color.GREEN);
+
+                    e.replyEmbeds(eb.build()).setEphemeral(true).queue();
+                    writeLog(eb,tc,minecraftname,e.getMember());
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            } else {
+                e.reply("Der Spieler ist nicht gewhitelisted!").setEphemeral(true).queue();
+            }
+        }
+    }
+
+    // SQL-connect Methode / wird verwendet um das Verbinden auf die Datenbank in einer abgegrentzen Methode zu handlen
+    public void removeUser(LiteSQL sql, String minecraftname) throws SQLException {
+
+        sql.getConnection().close();
+        Connection con = sql.getConnection();
+        PreparedStatement stmtRemoveUser = con.prepareStatement("DELETE FROM Whitelist WHERE MCUsername = '" + minecraftname + "'");
+        stmtRemoveUser.executeUpdate();
+        stmtRemoveUser.close();
+        con.close();
+
+    }
+    // wird benötigt um den Spieler über das OfflinePlayer Objekt auf dem Server von der Whitelist zu entfernen
+    public static class DeWhitelistPlayer extends BukkitRunnable {
+        @Override
+        public void run() {
+            OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
+
+            player.setWhitelisted(false);
+        }
+    }
+
+
+    // Methode zum schreiben des Logs
+    public void writeLog(EmbedBuilder eb, TextChannel tc, String minecraftname, Member modUser) {
+        eb
+                .setTitle("User entfernt")
+                .setColor(Color.RED)
+                .addField("MC-Name", minecraftname, false)
+                .setFooter("entfernt von " + modUser.getEffectiveName());
+
+
+        tc.sendMessageEmbeds(eb.build()).queue();
+    }
+
+}
