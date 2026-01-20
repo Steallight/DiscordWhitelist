@@ -1,0 +1,29 @@
+name: Dependabot Auto-Merge
+
+on: pull_request_target
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'  # Nur Dependabot PRs
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Maven Tests  # Deine Checks (Build/Test)
+        run: mvn clean test
+      - name: Approve PR
+        run: gh pr review --approve "$PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{github.event.pull_request.html_url}}
+      - name: Enable Auto-Merge
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{github.event.pull_request.html_url}}
