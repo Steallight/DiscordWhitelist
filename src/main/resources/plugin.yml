@@ -1,8 +1,8 @@
-name: DiscordWhitelist
-version: '${project.version}'
-main: de.steallight.discordwhitelist.DiscordWhitelist
-author: "SteallightDEV"
-api-version: '1.20'
+name: DiscordWhitelistPort
+version: '1.0-SNAPSHOT'
+main: de.steallight.discordWhitelistPort.main.DiscordWhitelistPort
+author: "Steallight"
+api-version: '1.21'
 commands:
   wl:
     description: "Verwalte die Whitelist auf dem Server"

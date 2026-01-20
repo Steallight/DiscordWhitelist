@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/DiscordWhitelist.iml" filepath="$PROJECT_DIR$/DiscordWhitelist.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DiscordWhitelistPort.iml" filepath="$PROJECT_DIR$/DiscordWhitelistPort.iml" />
     </modules>
   </component>
 </project>
