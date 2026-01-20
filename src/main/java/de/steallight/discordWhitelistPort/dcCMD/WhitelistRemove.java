@@ -42,7 +42,7 @@ public class WhitelistRemove extends ListenerAdapter {
                             .setColor(Color.GREEN);
 
                     e.replyEmbeds(eb.build()).setEphemeral(true).queue();
-                    writeLog(eb,tc,minecraftname,e.getMember());
+                    writeLog(eb, tc, minecraftname, e.getMember());
                 } catch (SQLException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -64,6 +64,7 @@ public class WhitelistRemove extends ListenerAdapter {
         con.close();
 
     }
+
     // wird benötigt um den Spieler über das OfflinePlayer Objekt auf dem Server von der Whitelist zu entfernen
     public static class DeWhitelistPlayer extends BukkitRunnable {
         @Override

@@ -8,8 +8,10 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,25 +138,34 @@ public class ButtonHandler extends ListenerAdapter {
 
             minecraftname = e.getComponentId().substring(20);
             OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
-
-            if (player.isWhitelisted()) {
-
-                try {
-                    new DeWhitlistPlayer().runTask(DiscordWhitelistPort.getPlugin());
-                    e.reply("Der User wurde von der Whitelist entfernt").setEphemeral(true).queue();
-                    removeMCBinder(DiscordWhitelistPort.getPlugin().database, minecraftname);
-                    writeLog(minecraftname + " von der Whitelist entfernt", Color.green, "entfernt von " + e.getMember().getNickname(), e);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-            }else {
-                e.reply("Der User steht nicht auf der Whitelist").queue();
+            if (player.isConnected()){
+                new kickPlayer().runTask(DiscordWhitelistPort.getPlugin());
+                dewhitelistPlayer(e, player);
+            } else {
+                dewhitelistPlayer(e, player);
             }
+
         }
     }
 
-    public class WhitelistPlayer extends BukkitRunnable {
+    protected void dewhitelistPlayer(@NotNull ButtonInteractionEvent e, OfflinePlayer player) {
+        if (player.isWhitelisted()) {
+
+            try {
+                new DeWhitlistPlayer().runTask(DiscordWhitelistPort.getPlugin());
+                e.reply("Der User wurde von der Whitelist entfernt").setEphemeral(true).queue();
+                removeMCBinder(DiscordWhitelistPort.getPlugin().database, minecraftname);
+                writeLog(minecraftname + " von der Whitelist entfernt", Color.green, "entfernt von " + e.getMember().getNickname(), e);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }else {
+            e.reply("Der User steht nicht auf der Whitelist").queue();
+        }
+    }
+
+    private static class WhitelistPlayer extends BukkitRunnable {
         @Override
         public void run() {
             OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
@@ -163,12 +174,21 @@ public class ButtonHandler extends ListenerAdapter {
         }
     }
 
-    public class DeWhitlistPlayer extends BukkitRunnable {
+    private static class DeWhitlistPlayer extends BukkitRunnable {
         @Override
         public void run() {
             OfflinePlayer player = Bukkit.getOfflinePlayer(minecraftname);
 
             player.setWhitelisted(false);
+        }
+    }
+
+    private static class kickPlayer extends BukkitRunnable{
+
+        @Override
+        public void run() {
+            Player p = Bukkit.getPlayer(minecraftname);
+            p.kick(Component.text("Du wurdest aus der Whitelist geworfen!"));
         }
     }
 
@@ -205,5 +225,7 @@ public class ButtonHandler extends ListenerAdapter {
 
 
     }
+
+
 
 }

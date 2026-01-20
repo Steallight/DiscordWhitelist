@@ -6,6 +6,7 @@ import de.steallight.discordWhitelistPort.dcCMD.WhitelistRemove;
 import de.steallight.discordWhitelistPort.listener.AutoCompleteListener;
 import de.steallight.discordWhitelistPort.listener.ButtonHandler;
 import de.steallight.discordWhitelistPort.mcCMD.MCWhitelist;
+import de.steallight.discordWhitelistPort.messaging.MessageFormatter;
 import de.steallight.discordWhitelistPort.utils.LiteSQL;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -21,20 +22,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import de.steallight.discordWhitelistPort.messaging.MessageFormatter;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
 
 public final class DiscordWhitelistPort extends JavaPlugin {
 
     public static JDA jda;
     private MessageFormatter messageFormatter;
     private static DiscordWhitelistPort INSTANCE;
-    public LiteSQL database = new LiteSQL();
+    public LiteSQL database = null;
 
-    public DiscordWhitelistPort() throws SQLException, IOException {
+    public DiscordWhitelistPort(){
 
     }
 
@@ -68,64 +67,92 @@ public final class DiscordWhitelistPort extends JavaPlugin {
 
         saveDefaultConfig();
 
+        try{
+            messageFormatter = new MessageFormatter();
+            getLogger().info("MessageFormatter geladen.");
+        }catch (Exception e){
+            getLogger().severe("MessageLogger fehlgeschlagen: " + e.getMessage());
+            disablePluginGracefully("MessageFormatter Fehler");
+            return;
+        }
 
-
-
-        getCommand("wl").setExecutor(new MCWhitelist());
-        getCommand("wl").setTabCompleter(new MCWhitelist());
-
-
-        try {
-            String guildID = getConfig().getString("GUILD_ID");
-
-            String discordToken = getConfig().getString("BOT_TOKEN").trim();
-
-
-
-            Bukkit.getConsoleSender().sendMessage(DiscordWhitelistPort.getPlugin().messageFormatter.format("enable.enabled"));
-
-            if (discordToken.equals("")) {
-                getServer().getPluginManager().disablePlugin(this);
-                Bukkit.getConsoleSender().sendMessage(messageFormatter.format(false, "error.no-token"));
-            } else {
-                jda = JDABuilder.create(discordToken,
-                                GatewayIntent.GUILD_MEMBERS)
-                        .enableCache(CacheFlag.MEMBER_OVERRIDES)
-                        .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
-                        .build();
-                Guild server = jda.awaitReady().getGuildById(guildID);
-                Bukkit.getConsoleSender().sendMessage(messageFormatter.format("enable.bot-connected"));
-                assert server != null;
-                this.updateCommands(server);
-                this.addEvents();
-
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if (getCommand("wl") != null) {
+            getCommand("wl").setExecutor(new MCWhitelist());
+            getCommand("wl").setTabCompleter(new MCWhitelist());
         }
 
 
 
+        String guildID = getConfig().getString("GUILD_ID");
 
+        String discordToken = getConfig().getString("BOT_TOKEN").trim();
+
+
+        if (discordToken.isEmpty() || guildID.isEmpty()){
+            getLogger().severe("BOT_TOKEN oder GUILD_ID fehlen in der config.yml!");
+            disablePluginGracefully(messageFormatter.format(false, "error.no-token"));
+            return;
+        }
+
+        try {
+            jda = JDABuilder.create(discordToken,
+                            GatewayIntent.GUILD_MEMBERS)
+                    .enableCache(CacheFlag.MEMBER_OVERRIDES)
+                    .disableCache(CacheFlag.VOICE_STATE, CacheFlag.EMOJI, CacheFlag.STICKER, CacheFlag.SCHEDULED_EVENTS, CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS, CacheFlag.ONLINE_STATUS)
+                    .build();
+            Guild server = jda.awaitReady().getGuildById(guildID);
+
+
+            if (server == null){
+                throw new IllegalStateException("Guild ID '" + guildID + "' nicht gefunden!");
+            }
+            Bukkit.getConsoleSender().sendMessage(messageFormatter.format(true, "enable.enabled"));
+            Bukkit.getConsoleSender().sendMessage(messageFormatter.format(true, "enable.bot-connected"));
+
+
+            this.updateCommands(server);
+            this.addEvents();
+
+            try{
+                database = new LiteSQL();
+            }catch (Exception e){
+                getLogger().warning("Datenbank nicht geladen: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            getLogger().severe("Discord-Init fehlgeschlagen: " + e.getMessage());
+            disablePluginGracefully("Discord Fehler: " + e.getMessage());
+            return;
+        }
     }
 
     @Override
     public void onDisable() {
 
         // Plugin Shutdown Logic
-
-        String discordToken = getConfig().getString("BOT_TOKEN");
-        if (discordToken.equals("")) {
-            Bukkit.getConsoleSender().sendMessage(messageFormatter.format("disable.disabled"));
-            getServer().getPluginManager().disablePlugin(this);
-
-        } else {
-
-            Bukkit.getConsoleSender().sendMessage(messageFormatter.format("disable.disabled"));
-
+        if (messageFormatter != null){
+            messageFormatter = null;
         }
-        messageFormatter = null;
-        jda.shutdown();
+
+        if (jda != null){
+            try {
+                jda.shutdown();
+                if (!jda.awaitShutdown(5, TimeUnit.SECONDS)){
+                    jda.shutdownNow();
+                }
+            }catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+            jda = null;
+        }
+
+        if (database != null){
+            try {
+                database.getConnection().close();
+            }catch (Exception ignored){}
+            database = null;
+        }
+        getLogger().info("DiscordWhitelistPort deaktiviert.");
+
     }
 
     // Methode um EventListener zu registrieren
@@ -162,6 +189,15 @@ public final class DiscordWhitelistPort extends JavaPlugin {
 
     }
 
+    // Hilfsmethode für graceful Disable
+    private void disablePluginGracefully(String reason) {
+        getLogger().warning("Plugin deaktiviert: " + reason);
+        Bukkit.getScheduler().runTask(this, () -> {
+            if (Bukkit.getPluginManager().isPluginEnabled(this)) {
+                Bukkit.getPluginManager().disablePlugin(this);
+            }
+        });
+    }
 
     public static DiscordWhitelistPort getPlugin() {
         return INSTANCE;
