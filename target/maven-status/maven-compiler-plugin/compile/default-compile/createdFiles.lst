@@ -1,0 +1,13 @@
+de\steallight\discordWhitelistPort\messaging\MessageFormatter.class
+de\steallight\discordWhitelistPort\dcCMD\WhitelistAdd.class
+de\steallight\discordWhitelistPort\dcCMD\WhitelistRemove$DeWhitelistPlayer.class
+de\steallight\discordWhitelistPort\dcCMD\WhitelistRemove.class
+de\steallight\discordWhitelistPort\listener\ButtonHandler.class
+de\steallight\discordWhitelistPort\main\DiscordWhitelistPort.class
+de\steallight\discordWhitelistPort\dcCMD\IdentifyCMD.class
+de\steallight\discordWhitelistPort\listener\AutoCompleteListener.class
+de\steallight\discordWhitelistPort\listener\ButtonHandler$DeWhitlistPlayer.class
+de\steallight\discordWhitelistPort\listener\ButtonHandler$WhitelistPlayer.class
+de\steallight\discordWhitelistPort\utils\LiteSQL.class
+de\steallight\discordWhitelistPort\mcCMD\MCWhitelist.class
+de\steallight\discordWhitelistPort\messaging\MessageFile.class
