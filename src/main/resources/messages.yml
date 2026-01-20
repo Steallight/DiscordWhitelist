@@ -1,6 +1,6 @@
 prefix: '§8[§c§bDiscordWhitelist§8] '
 disable:
-  disabled: 'Plugin erfolgreich deaktiviert!'
+  disabled: 'Plugin wurde deaktiviert!'
 enable:
   enabled: '§7Plugin erfolgreich §aaktiviert!'
   bot-connected: '§7Discord Bot §averbunden!'
