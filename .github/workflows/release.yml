@@ -1,6 +1,6 @@
 name: DiscordWhitelisting Release
 
-on:  # ← Pflichtfeld!
+on:
   push:
     tags:
       - '*'
@@ -11,14 +11,32 @@ jobs:
     if: contains(github.ref_name, 'stable')
     permissions:
       contents: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Build JAR
         run: mvn clean package
+
       - name: Create Release
+        id: create_release
         uses: comnoco/create-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag: ${{ github.ref_name }}
-          name: DiscordWhitelisting ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          release_name: DiscordWhitelisting ${{ github.ref_name }}
           body: "Automatischer Stable-Release."
-          artifacts: "target/*.jar"
+          draft: false
+          prerelease: false
+
+      - name: Upload JAR as release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/*.jar
+          asset_name: DiscordWhitelisting-${{ github.ref_name }}.jar
+          asset_content_type: application/java-archive
