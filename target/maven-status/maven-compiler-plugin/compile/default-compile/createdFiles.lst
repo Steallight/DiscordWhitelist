@@ -2,6 +2,7 @@ de\steallight\discordWhitelistPort\messaging\MessageFormatter.class
 de\steallight\discordWhitelistPort\dcCMD\WhitelistAdd.class
 de\steallight\discordWhitelistPort\dcCMD\WhitelistRemove$DeWhitelistPlayer.class
 de\steallight\discordWhitelistPort\dcCMD\WhitelistRemove.class
+de\steallight\discordWhitelistPort\listener\ButtonHandler$kickPlayer.class
 de\steallight\discordWhitelistPort\listener\ButtonHandler.class
 de\steallight\discordWhitelistPort\main\DiscordWhitelistPort.class
 de\steallight\discordWhitelistPort\dcCMD\IdentifyCMD.class
