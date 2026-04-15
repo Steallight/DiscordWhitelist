@@ -11,15 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'  # Nur Dependabot PRs
     steps:
+      - name: Set up Java 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Set up Java 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
       - name: Maven Tests  # Deine Checks (Build/Test)
         run: mvn clean test
       - name: Approve PR
