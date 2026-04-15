@@ -1,24 +1,11 @@
-name: DiscordWhitelisting Release
-
-on:  # ← Pflichtfeld!
-  push:
-    tags:
-      - '*'
-
-jobs:
-  release:
-    runs-on: ubuntu-latest
-    if: contains(github.ref_name, 'stable')
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Build JAR
-        run: mvn clean package
-      - name: Create Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ github.ref_name }}
-          name: DiscordWhitelisting ${{ github.ref_name }}
-          body: "Automatischer Stable-Release."
-          artifacts: "target/*.jar"
+- name: Create Release
+  uses: comnoco/create-release@v2
+  with:
+    tag_name: ${{ github.ref }}
+    release_name: Release ${{ github.ref }}
+    body: |
+      Changes in this Release
+    draft: false
+    prerelease: false
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
